@@ -11,25 +11,31 @@
 
 using namespace std;
 
-void FoutSort(multimap<int, Fishmen>& mapFishers1, multimap<int, Fishmen>& mapFishers2, wofstream& fout)
+multimap<int, Fishmen> FillMapTogether(multimap<int, Fishmen>& mapFishmen1, multimap<int, Fishmen>& mapFishmen2 )
 {
-	for (auto a : mapFishers2)
-		mapFishers1.insert(pair<int, Fishmen>(a.first, a.second));
-	for (auto a : mapFishers1)
-		fout << a.second << endl;
+	multimap<int, Fishmen> mapTogether;
+	for(auto a : mapFishmen1)
+		mapTogether.insert(pair<int, Fishmen>(a.first, a.second));
+	for (auto a : mapFishmen2)
+		mapTogether.insert(pair<int, Fishmen>(a.first, a.second));
+	return mapTogether;
 }
 
-void LastTable(multimap<int, Fishmen>& mapFishers1, multimap<int, Fishmen>& mapFishers2, wofstream& fout)
+void FoutSort(multimap<int, Fishmen>& mapFishers1, wofstream& fout)
 {
-	for (auto a : mapFishers2)
-		mapFishers1.insert(pair<int, Fishmen>(a.first, a.second));
+	for_each(mapFishers1.begin(), mapFishers1.end(), [&](auto& a) {fout << a.second << endl; });
+}
+
+void LastTable(multimap<int, Fishmen>& mapFishers1, wofstream& fout)
+{
 	for (auto it = mapFishers1.begin(); it != mapFishers1.upper_bound(17); ++it)
 		it->second.summa *= 1.1;
 	for (auto it = mapFishers1.lower_bound(18); it != mapFishers1.upper_bound(30); ++it)
 		it->second.summa *= 1.0;
 	for (auto it = mapFishers1.lower_bound(18); it != mapFishers1.upper_bound(30); ++it)
 		it->second.summa *= 0.9;
-	for_each(mapFishers1.begin(), mapFishers1.end(), [&](auto& a) {fout << a.second << endl; });
+	for (auto a : mapFishers1)
+		fout << a.second << endl;
 }
 
 void FindMaxByYears(multimap<int, Fishmen>& mapFishmen, wofstream& fout)
@@ -97,7 +103,7 @@ vector<Fishmen> FillVector(string way)
 			double weight;
 			getline(wifile, wstr);
 			wstringstream str_stream(wstr);
-			str_stream >> men.name >> men.surname >> men.years;
+			str_stream >> men.surname >> men.name >> men.years;
 			getline(wifile, wstr);
 			wstringstream str_stream1(wstr);
 			while (!str_stream1.eof())
@@ -126,6 +132,7 @@ void Menu(string way1,string way2)
 	fout.imbue(locale(locale::empty(), new codecvt_utf8<wchar_t>));
 	auto MapFishmen2017 = FillMapYears(VectorFishmen2017);
 	auto MapFishmen2018 = FillMapYears(VectorFishmen2018);
+	auto Map20172018 = FillMapTogether(MapFishmen2017,MapFishmen2018);
 	fout << L"Best in 2017 : " << endl;
 	FindMaxByYears(MapFishmen2017, fout);
 	fout << L"Best in 2018 : " << endl;
@@ -133,10 +140,10 @@ void Menu(string way1,string way2)
 	ShowAll(VectorFishmen2017,VectorFishmen2018, fout);
 
 	fout << L"Sorted : " << endl;
-	FoutSort(MapFishmen2017, MapFishmen2018, fout);
+	FoutSort(Map20172018,fout);
 	fout << endl;
 	fout << L"Last Table : " << endl;
-	LastTable(MapFishmen2017, MapFishmen2018, fout);
+	LastTable(Map20172018, fout);
 }
 
 int main()

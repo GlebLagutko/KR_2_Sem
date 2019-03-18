@@ -6,6 +6,7 @@
 #include <iterator>
 #include <sstream>
 #include <map>
+#include <iomanip>
 
 using namespace std;
 
@@ -147,7 +148,8 @@ public:
 
 	friend std::wostream& operator<<(std::wostream& os, const Fishmen& obj)
 	{
-		return os << obj.name << " " << obj.surname << " " << obj.years << " " << obj.summa;
+
+		return os << left << setw(20)  <<  obj.surname << left << setw(12)<<  obj.name << left << setw(3) << obj.years << left << setw(6) << obj.summa;
 	}
 
 };
